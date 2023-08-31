@@ -44,7 +44,7 @@ public class UserDAOImpl implements UserDAO {
         return UserDB.userList.stream()
                 .mapToInt(User::getId)
                 .max()
-                .orElseGet(() -> 1);
+                .orElse(0) + 1;
     }
 
 
