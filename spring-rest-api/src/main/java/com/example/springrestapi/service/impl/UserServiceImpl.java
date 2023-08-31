@@ -2,7 +2,6 @@ package com.example.springrestapi.service.impl;
 
 
 import com.example.springrestapi.dao.UserDAO;
-import com.example.springrestapi.database.UserDB;
 import com.example.springrestapi.dto.UserDto;
 import com.example.springrestapi.exception.PasswordChangeException;
 import com.example.springrestapi.exception.ResourceNotFoundException;
@@ -94,6 +93,7 @@ public class UserServiceImpl implements UserService {
                 .password(userRequest.getPassword())
                 .build();
 
+        userDAO.save(user);
 
         return new UserDto(
                 user.getId(),
