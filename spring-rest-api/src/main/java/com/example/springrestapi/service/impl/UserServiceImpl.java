@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     public void changeUserAvatar(int id, AvatarRequest avatarRequest) {
         User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
-        user.setAvatar(avatarRequest.getAvatarString());
+        user.setAvatar(avatarRequest.getAvatar());
     }
 
     @Override

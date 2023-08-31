@@ -11,5 +11,5 @@ import lombok.*;
 @Builder
 public class AvatarRequest {
     @NotBlank(message = "Avatar is required")
-    private String avatarString;
+    private String avatar;
 }
