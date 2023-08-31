@@ -22,7 +22,6 @@ public class UserRequest {
     private String phone;
     @NotBlank(message = "Address is required")
     private String address;
-    @NotBlank(message = "Avatar is required")
     private String avatar;
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 15, message = "Password length must be between 8 and 15 characters")
