@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
     public void changeUserPassword(int id, PasswordRequest passwordRequest) {
         User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
-        if(!user.getPassword().equals(passwordRequest.getOldPassword()) && passwordRequest.getNewPassword().equals(passwordRequest.getOldPassword()) ) {
+        if(!user.getPassword().equals(passwordRequest.getOldPassword()) && !passwordRequest.getNewPassword().equals(passwordRequest.getOldPassword()) ) {
             throw new PasswordChangeException("Invalid password change request");
         }else{
             user.setPassword(passwordRequest.getNewPassword());
