@@ -2,7 +2,6 @@ package com.example.springrestapi.controller;
 
 
 import com.example.springrestapi.dto.UserDto;
-import com.example.springrestapi.model.User;
 import com.example.springrestapi.request.AvatarRequest;
 import com.example.springrestapi.request.PasswordRequest;
 import com.example.springrestapi.request.UserRequest;
