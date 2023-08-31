@@ -22,7 +22,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler({BadRequestException.class,  PasswordChangeException.class})
-    public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
+    public ResponseEntity<?> handleBadRequestException(Exception e) {
         return new ResponseEntity<>(
                 new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage()),
                 HttpStatus.BAD_REQUEST
