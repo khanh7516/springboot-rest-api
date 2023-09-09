@@ -28,10 +28,11 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<UserResponse> getUsers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int limit) {
-        UserResponse userResponse = userService.getUsers(page, limit);
+    public
+    ResponseEntity<List<UserDto>>getUsers() {
+        List<UserDto> userDtos = userService.getUsers();
 
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(userDtos);
 
     }
 

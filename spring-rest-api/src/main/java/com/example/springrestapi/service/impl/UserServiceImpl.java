@@ -1,21 +1,19 @@
 package com.example.springrestapi.service.impl;
 
 
-import com.example.springrestapi.dao.UserDAO;
+import com.example.springrestapi.repository.UserRepository;
 import com.example.springrestapi.dto.UserDto;
 import com.example.springrestapi.exception.PasswordChangeException;
 import com.example.springrestapi.exception.ResourceNotFoundException;
-import com.example.springrestapi.model.User;
+import com.example.springrestapi.entity.User;
 import com.example.springrestapi.request.AvatarRequest;
 import com.example.springrestapi.request.PasswordRequest;
 import com.example.springrestapi.request.UserRequest;
 import com.example.springrestapi.response.NewPasswordResponse;
-import com.example.springrestapi.response.UserResponse;
 import com.example.springrestapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -23,59 +21,30 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository userRepository;
 
     @Override
-    public UserResponse getUsers(int page, int limit) {
-        List<User> users = userDAO.findAll();
-        List<UserDto> userDtos = new ArrayList<>();
+    public List<UserDto> getUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertToUserDto)
+                .collect(Collectors.toList());
 
-        for (User user : users) {
-            UserDto userDto = UserDto.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .phone(user.getPhone())
-                    .address(user.getAddress())
-                    .avatar(user.getAvatar())
-                    .build();
-
-            userDtos.add(userDto);
-        }
-        int totalPage = (int) Math.ceil((double) userDtos.size() / limit);
-
-        return new UserResponse(userDtos, page, limit, totalPage );
     }
 
     @Override
     public UserDto getUserByID(int id) {
-        User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getAddress(),
-                user.getAvatar()
-        );
+        return convertToUserDto(user);
     }
 
 
     @Override
     public List<UserDto> searchUserByName(String name) {
-        List<User> users = userDAO.findAll();
-
+        List<User> users = userRepository.findUserByNameContainingIgnoreCase(name);
         return users.stream()
-                .filter(user -> user.getName().toLowerCase().contains(name.toLowerCase()))
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getPhone(),
-                        user.getAddress(),
-                        user.getAvatar()
-                ))
+                .map(this::convertToUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -92,22 +61,15 @@ public class UserServiceImpl implements UserService {
                 .password(userRequest.getPassword())
                 .build();
 
-        userDAO.save(user);
+        userRepository.save(user);
 
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getAddress(),
-                user.getAvatar()
-        );
+        return convertToUserDto(user);
 
     }
 
     @Override
     public UserDto updateUser(int id, UserRequest userRequest) {
-        User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
@@ -116,49 +78,45 @@ public class UserServiceImpl implements UserService {
         user.setAvatar(user.getAvatar());
         user.setPassword(user.getPassword());
 
-
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getAddress(),
-                user.getAvatar()
-        );
+        userRepository.save(user);
+        return convertToUserDto(user);
     }
 
     @Override
     public void deleteUser(int id) {
-        userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
-        userDAO.deleteById(id);
+        userRepository.deleteById(id);
 
     }
 
     @Override
     public void changeUserAvatar(int id, AvatarRequest avatarRequest) {
-        User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
         user.setAvatar(avatarRequest.getAvatar());
+        userRepository.save(user);
     }
 
     @Override
     public void changeUserPassword(int id, PasswordRequest passwordRequest) {
-        User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
         if(!user.getPassword().equals(passwordRequest.getOldPassword()) && !passwordRequest.getNewPassword().equals(passwordRequest.getOldPassword()) ) {
             throw new PasswordChangeException("Invalid password change request");
         }else{
             user.setPassword(passwordRequest.getNewPassword());
+            userRepository.save(user);
         }
     }
 
     @Override
     public NewPasswordResponse forgotPassword(int id) {
-        User user = userDAO.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found user"));
 
         String newPassword = generateRandomPassword(user.getPassword());
         user.setPassword(newPassword);
+        userRepository.save(user);
 
         return new NewPasswordResponse(newPassword);
     }
@@ -177,6 +135,17 @@ public class UserServiceImpl implements UserService {
         }
 
         return password.toString();
+    }
+
+    private UserDto convertToUserDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getAddress(),
+                user.getAvatar()
+        );
     }
 }
 

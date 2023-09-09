@@ -1,7 +1,6 @@
 package com.example.springrestapi.service;
 
 import com.example.springrestapi.dto.UserDto;
-import com.example.springrestapi.model.User;
 import com.example.springrestapi.request.AvatarRequest;
 import com.example.springrestapi.request.PasswordRequest;
 import com.example.springrestapi.request.UserRequest;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public interface UserService {
 
-    UserResponse getUsers(int page, int limit);
+    List<UserDto> getUsers();
     UserDto getUserByID(int id);
 
     List<UserDto> searchUserByName(String name);
