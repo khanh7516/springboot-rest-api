@@ -5,7 +5,6 @@ import com.example.springrestapi.request.AvatarRequest;
 import com.example.springrestapi.request.PasswordRequest;
 import com.example.springrestapi.request.UserRequest;
 import com.example.springrestapi.response.NewPasswordResponse;
-import com.example.springrestapi.response.UserResponse;
 
 import java.util.List;
 
