@@ -14,23 +14,23 @@ class SpringRestApiApplicationTests {
     @Autowired
     private UserRepository userRepository;
 
-//    @Test
-//    void save_users() {
-//        Faker faker = new Faker();
-//
-//        for (int i = 0; i < 30; i++) {
-//            User user = User.builder()
-//                    .name(faker.name().fullName())
-//                    .email(faker.internet().emailAddress())
-//                    .phone(faker.phoneNumber().phoneNumber())
-//                    .address(faker.address().fullAddress())
-//                    .avatar(faker.internet().avatar())
-//                    .password(faker.internet().password())
-//                    .build();
-//
-//            userRepository.save(user);
-//        }
-//    }
+    @Test
+    void save_users() {
+        Faker faker = new Faker();
+
+        for (int i = 0; i < 30; i++) {
+            User user = User.builder()
+                    .name(faker.name().fullName())
+                    .email(faker.internet().emailAddress())
+                    .phone(faker.phoneNumber().phoneNumber())
+                    .address(faker.address().fullAddress())
+                    .avatar(faker.internet().avatar())
+                    .password(faker.internet().password())
+                    .build();
+
+            userRepository.save(user);
+        }
+    }
     @Test
     void contextLoads() {
     }
