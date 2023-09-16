@@ -18,7 +18,7 @@
             <div class="col-md-10">
 
                 <div class="d-flex justify-content-between align-items-center mt-5 mb-4">
-                    <a th:href="@{/api/v2/users/create}" class="btn btn-warning">Tạo user</a>
+                    <a th:href="@{/users/create}" class="btn btn-warning">Tạo user</a>
                     <input type="text" id="search" class="form-control w-50" placeholder="Tìm kiếm user" onkeyup="searchUser()" />
                 </div>
 
@@ -36,15 +36,15 @@
                         </thead>
 
                         <tbody>
-                            <tr th:each="user : ${users}">
-                                <td th:text="${user.id}">1</td>
+                            <tr th:each="user, index : ${users}">
+                                <td th:text="${index.index + 1}">1</td>
                                 <td th:text="${user.name}">Nguyễn Văn A</td>
                                 <td th:text="${user.email}">a@gmail.com</td>
                                 <td th:text="${user.phone}">0987654321</td>
                                 <td th:text="${user.address}">Hà Nội</td>
                                 <td>
-                                    <a th:href="@{/api/v2/users/{id} (id = ${user.id})}" class="btn btn-success">Xem chi tiết</a>
-                                    <button class="btn btn-danger" th:onclick="'deleteUser(' + ${user.id} + ', this)'">Xóa</button>
+                                    <button class="btn btn-success view-detail" th:attr="data-id=${user.id}">Xem chi tiết</button>
+                                    <button class="btn btn-danger delete-user" th:attr="data-id=${user.id}">Xóa</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -62,10 +62,45 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script th:inline="javascript" >
+        function attachEventListeners() {
+            const viewDetailButtons = document.querySelectorAll(".view-detail");
+            const deleteButtons = document.querySelectorAll(".delete-user");
+
+            // Gắn sự kiện cho nút "Xem chi tiết"
+            viewDetailButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    const userId = button.getAttribute("data-id");
+                    // Thực hiện hành động Xem chi tiết ở đây, ví dụ chuyển hướng đến trang chi tiết người dùng
+                    window.location.href = `/users/${userId}`;
+                });
+            });
+
+            //Xóa user
+            deleteButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    const userId = button.getAttribute("data-id");
+                    if (confirm("Bạn có chắc muốn xóa người dùng này?")) {
+                        // Thực hiện hành động Xóa ở đây
+                        axios.delete(`/api/v1/users/${userId}`)
+                            .then(function () {
+                                // Xóa hàng trong bảng sau khi xóa thành công
+                                button.closest("tr").remove();
+                                window.location.href = `/users`;
+                                alert("Xóa thành công!");
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                                alert("Xóa thất bại. Vui lòng thử lại sau.");
+                            });
+                    }
+                });
+            });
+        }
+
         // Chức năng tìm kiếm theo tên
         function searchUser() {
             const searchInput = document.getElementById("search");
-            const searchValue = searchInput.value;
+            const searchValue = searchInput.value.trim();
 
             // Ánh xạ giá trị tìm kiếm lên thanh tìm kiếm URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -83,21 +118,24 @@
                     users.forEach(function (user, index) {
                         const newRow = document.createElement("tr");
                         newRow.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.phone}</td>
-                        <td>${user.address}</td>
-                        <td>
-                            <a href="/api/v1/users/${user.id}" class="btn btn-success">Xem chi tiết</a>
-                            <button class="btn btn-danger" th:onclick="'deleteUser(' + ${user.id} + ', this)'">Xóa</button>
-                        </td>
-                    `;
+                    <td>${index + 1}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.address}</td>
+                    <td>
+                        <button class="btn btn-success view-detail" data-id=${user.id}>Xem chi tiết</button>
+                        <button class="btn btn-danger delete-user" data-id=${user.id}>Xóa</button>
+                    </td>
+                `;
                         tableBody.appendChild(newRow);
                     });
 
                     // Cập nhật URL trang web với giá trị tìm kiếm
                     history.replaceState(null, "", newURL);
+
+                    // Gắn lại sự kiện cho các nút "Xóa" và "Xem chi tiết"
+                    attachEventListeners();
                 })
                 .catch(function (error) {
                     console.error(error);
@@ -113,27 +151,9 @@
                 searchUser();
             }
         });
-
-
-
-        //Xóa user
-        function deleteUser(userId, buttonElement) {
-            if (confirm("Bạn có chắc muốn xóa người dùng này?")) {
-                axios.delete(`/api/v1/users/${userId}`)
-                    .then(function () {
-                        // Xóa dòng của người dùng khỏi danh sách trên giao diện người dùng
-                        const row = buttonElement.closest("tr");
-                        row.remove();
-                        alert("Xóa thành công!");
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        alert("Xóa thất bại. Vui lòng thử lại sau.");
-                    });
-            }
-        }
-
+        attachEventListeners();
     </script>
+
 </body>
 
 </html>
