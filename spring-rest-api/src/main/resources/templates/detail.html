@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-3">
-                    <a class="btn btn-secondary btn-back" href="/api/v2/users" >Quay lại</a>
+                    <a class="btn btn-secondary btn-back" href="/users" >Quay lại</a>
                     <button class="btn btn-success" id="btn-save">Cập nhật</button>
                 </div>
             </div>
@@ -237,7 +237,7 @@
                 // Gửi yêu cầu API PUT để cập nhật thông tin người dùng
                 axios.put(`/api/v1/users/${userId}`, userData)
                     .then(function (response) {
-                        window.location.href = "/api/v2/users";
+                        window.location.href = "/users";
                         alert("Cập nhật thông tin người dùng thành công!");
                     })
                     .catch(function (error) {
