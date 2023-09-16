@@ -80,7 +80,7 @@
                     <div class="mb-3">
                         <label class="form-label">Avatar</label>
                         <div class="avatar-preview mb-3 rounded">
-                            <img src="https://via.placeholder.com/200" alt="avatar" id="avatar-preview" class="rounded">
+                            <img th:src="${user.avatar}" th:alt="${user.name}" id="avatar-preview" class="rounded">
                         </div>
 
                         <button id="btn-modal-image" type="button" class="btn btn-warning" data-bs-toggle="modal"
